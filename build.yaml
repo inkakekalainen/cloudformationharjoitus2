@@ -1,11 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Academy Demo CloudFormation
+Description: Academy CloudFormation checkpoint
 Parameters:
   DefaultParametri:
     Type: String
-    Default: "Inka"
+    Default: Inka
+  AmiId:
+    Type: String
+    Default: ami-07eda9385feb1e969
 
-Resourses:
+Resources:
   InstanssiSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -15,16 +18,41 @@ Resourses:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
   Instanssi:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-07eda9385feb1e969
+      ImageId:
+        Ref: AmiId
       InstanceType: t2.nano
       SecurityGroups:
         - !Ref InstanssiSecurityGroup
       Tags:
-        - Key: Name
+        - Key: Owner
           Value: Inka
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - "\n"
+            - - "#!/bin/bash"
+              - "amazon-linux-extras install epel"
+              - "amazon-linux-extras install nginx1"
+              - "systemctl start nginx"
+  InkaBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      Tags:
+        - Key: Owner
+          Value:
+            Ref: DefaultParametri
+  SsmParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value: arn:aws:s3:::InkaBucket
 Outputs:
   Instanssi:
-    Value: !GetAtt Instanssi.DNSName
+    Value: !GetAtt Instanssi.PublicDnsName
