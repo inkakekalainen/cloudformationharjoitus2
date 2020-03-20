@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Academy Demo CloudFormation
+Parameters:
+  DefaultParametri:
+    Type: String
+    Default: "Inka"
+
+Resourses:
+  InstanssiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Security group for EC2 instance'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+  Instanssi:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-07eda9385feb1e969
+      InstanceType: t2.nano
+      SecurityGroups:
+        - !Ref InstanssiSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Inka
+Outputs:
+  Instanssi:
+    Value: !GetAtt Instanssi.DNSName
