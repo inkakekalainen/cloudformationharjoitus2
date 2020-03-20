@@ -52,7 +52,7 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Value: arn:aws:s3:::InkaBucket
+      Value: !GetAtt InkaBucket.Arn
 Outputs:
   Instanssi:
     Value: !GetAtt Instanssi.PublicDnsName
